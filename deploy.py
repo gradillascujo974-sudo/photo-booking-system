@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""光影约拍 - 一键部署脚本"""
-import os, sys, subprocess, paramiko
+"""光影约拍 - 一键部署脚本（纯 Python 实现，不依赖外部 tar 命令）"""
+import os, sys, subprocess, paramiko, tarfile
 
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 SERVER_IP = "106.54.36.113"
@@ -42,6 +42,19 @@ def sftp_upload(host, user, password, local, remote, desc=""):
     t.close()
     print("  上传完成")
 
+def make_tar_gz(output_path, source_dirs):
+    """用 Python 内置库创建 tar.gz，不依赖外部命令"""
+    print("  打包中...")
+    with tarfile.open(output_path, "w:gz") as tar:
+        for item in source_dirs:
+            src = os.path.join(PROJECT_DIR, item)
+            if os.path.isdir(src):
+                tar.add(src, arcname=item)
+            elif os.path.isfile(src):
+                tar.add(src, arcname=item)
+            else:
+                print(f"  警告: {item} 不存在，跳过")
+
 print("=" * 50)
 print("  光影约拍 - 一键部署")
 print("=" * 50)
@@ -50,14 +63,16 @@ print("=" * 50)
 print("\n[1/4] 构建前端...")
 run_cmd("npm run build", "前端构建")
 
-# 2. Package
+# 2. Package (using Python's built-in tarfile, no external tar needed)
 print("\n[2/4] 打包部署文件...")
 tar_file = os.path.join(PROJECT_DIR, "deploy.tar.gz")
 if os.path.exists(tar_file):
     os.remove(tar_file)
 
-print(f"  打包到项目目录...")
-run_cmd('tar -czf deploy.tar.gz dist/ backend/target/photo-booking-backend-1.0.0.jar', "打包")
+make_tar_gz(tar_file, [
+    "dist",
+    "backend/target/photo-booking-backend-1.0.0.jar"
+])
 size_mb = os.path.getsize(tar_file) / 1024 / 1024
 print(f"  打包完成: {size_mb:.1f} MB")
 
