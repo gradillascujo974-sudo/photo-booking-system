@@ -87,14 +87,11 @@ ssh_exec(SERVER_IP, SERVER_USER, SERVER_PASS,
     "echo '前端已更新'",
     "解压部署")
 
-# 4. Restart backend
+# 4. Restart backend via systemd (auto-restart on crash)
 print("\n[4/4] 重启后端服务...")
 ssh_exec(SERVER_IP, SERVER_USER, SERVER_PASS,
-    "pkill -f photo-booking-backend; "
-    "sleep 2; "
-    "cd /root/photo-booking-system/backend && "
-    "nohup java -jar target/photo-booking-backend-1.0.0.jar > app.log 2>&1 & "
-    "sleep 3 && "
+    "systemctl restart photo-booking; "
+    "sleep 5 && "
     "curl -s http://127.0.0.1:8080/api/categories | head -c 100",
     "重启后端")
 
