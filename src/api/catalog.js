@@ -1,0 +1,16 @@
+import request from '@/utils/request'
+
+export const fetchBanners = () => request.get('/banners')
+export const fetchNotices = () => request.get('/notices')
+export const createNotice = data => request.post('/admin/notices', data)
+export const fetchCategories = () => request.get('/categories')
+export const fetchServices = params => request.get('/services', { params })
+export const fetchServiceDetail = id => request.get(`/services/${id}`)
+export const fetchPhotographers = params => request.get('/photographers', { params })
+export const fetchPhotographer = id => request.get(`/photographers/${id}`)
+export const fetchPortfolios = params => request.get('/portfolios', { params })
+export const fetchPortfolioDetail = id => request.get(`/portfolios/${id}`)
+export const fetchMyServices = () => request.get('/photographer/services')
+export const fetchMyPortfolios = () => request.get('/photographer/portfolios')
+export const fetchAdminStats = () => request.get('/admin/stats')
+export const fetchAdminUsers = () => request.get('/admin/users')
